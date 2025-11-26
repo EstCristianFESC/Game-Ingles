@@ -123,40 +123,28 @@
     let score2 = 0;
     let currentMatch = null;
 
-    const preguntas = [
-        { q: "What is the capital of Colombia?", opts: ["Bogotá", "Cali", "Medellín"], correct: "Bogotá" },
-        { q: "Which ocean is on Colombia’s west coast?", opts: ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean"], correct: "Pacific Ocean" },
-        { q: "Which famous coffee comes from Colombia?", opts: ["Arabica", "Robusta", "Cappuccino"], correct: "Arabica" },
-        { q: "What is the currency of Colombia?", opts: ["Peso", "Dollar", "Euro"], correct: "Peso" },
-        { q: "Which city is known as the 'City of Eternal Spring'?", opts: ["Medellín", "Barranquilla", "Cartagena"], correct: "Medellín" },
-        { q: "What is Colombia’s most famous carnival?", opts: ["Barranquilla Carnival", "Flower Festival", "White and Black Carnival"], correct: "Barranquilla Carnival" },
-        { q: "What is the national flower of Colombia?", opts: ["Orchid", "Rose", "Sunflower"], correct: "Orchid" },
-        { q: "What is the main language spoken in Colombia?", opts: ["Spanish", "English", "Portuguese"], correct: "Spanish" },
-        { q: "Which drink is traditional in Colombia?", opts: ["Aguardiente", "Tequila", "Vodka"], correct: "Aguardiente" },
-        { q: "What is the Colombian national sport?", opts: ["Tejo", "Soccer", "Cycling"], correct: "Tejo" },
-        { q: "Which Colombian city has a historic walled city?", opts: ["Cartagena", "Pereira", "Manizales"], correct: "Cartagena" },
-        { q: "What is the most popular sport in Colombia?", opts: ["Soccer", "Basketball", "Baseball"], correct: "Soccer" },
-        { q: "Which mountain range crosses Colombia?", opts: ["Andes", "Himalayas", "Alps"], correct: "Andes" },
-        { q: "Which Colombian artist is famous for 'big figures'?", opts: ["Fernando Botero", "Picasso", "Monet"], correct: "Fernando Botero" },
-        { q: "Which fruit is common in Colombia?", opts: ["Mango", "Blueberry", "Kiwi"], correct: "Mango" },
-        { q: "What is Colombia’s Independence Day?", opts: ["July 20", "August 15", "May 5"], correct: "July 20" },
-        { q: "Which Colombian river is one of the largest?", opts: ["Magdalena River", "Nile River", "Danube River"], correct: "Magdalena River" },
-        { q: "Which dish is traditional in Colombia?", opts: ["Bandeja Paisa", "Paella", "Tacos"], correct: "Bandeja Paisa" },
-        { q: "Which animal is famous in the Colombian Amazon?", opts: ["Pink dolphin", "Polar bear", "Kangaroo"], correct: "Pink dolphin" },
-        { q: "Which Colombian city is known for salsa?", opts: ["Cali", "Bogotá", "Santa Marta"], correct: "Cali" },
-        { q: "What color is NOT on the Colombian flag?", opts: ["Green", "Yellow", "Red"], correct: "Green" },
-        { q: "Which Colombian writer won the Nobel Prize?", opts: ["Gabriel García Márquez", "Jorge Luis Borges", "Pablo Neruda"], correct: "Gabriel García Márquez" },
-        { q: "What is a typical Colombian sweet?", opts: ["Arequipe", "Marshmallow", "Baklava"], correct: "Arequipe" },
-        { q: "Which sea borders northern Colombia?", opts: ["Caribbean Sea", "Mediterranean Sea", "Black Sea"], correct: "Caribbean Sea" },
-        { q: "Which Colombian region is known for coffee?", opts: ["Coffee Axis", "Patagonia", "Amazon Basin"], correct: "Coffee Axis" },
-        { q: "What is a common Colombian greeting?", opts: ["Hola", "Bonjour", "Ciao"], correct: "Hola" },
-        { q: "Which famous Colombian music uses accordion?", opts: ["Vallenato", "Reggae", "Opera"], correct: "Vallenato" },
-        { q: "Which emblematic Colombian bird is large and black?", opts: ["Andean condor", "Flamingo", "Penguin"], correct: "Andean condor" },
-        { q: "Which city hosts the Flower Festival?", opts: ["Medellín", "Bogotá", "Cúcuta"], correct: "Medellín" },
-        { q: "What is a common Colombian street food?", opts: ["Arepa", "Pizza", "Sushi"], correct: "Arepa" },
-        { q: "Which Colombian department is known for its beaches?", opts: ["La Guajira", "Boyacá", "Tolima"], correct: "La Guajira" },
-        { q: "Which Colombian region is mostly jungle?", opts: ["Amazonas", "Antioquia", "Cundinamarca"], correct: "Amazonas" }
-    ];
+const preguntas = [
+    { q: "Which WH-word is used to ask about a person?", opts: ["When", "Who", "Where"], correct: "Who" },
+    { q: "Complete the question: '___ are you going?'", opts: ["What", "Where", "Why"], correct: "Where" },
+    { q: "Which WH-word is used to ask for reasons?", opts: ["Who", "How", "Why"], correct: "Why" },
+    { q: "Choose the correct question:", opts: ["Where you live?", "Where do you live?", "Do where you live?"], correct: "Where do you live?" },
+    { q: "'How much' is used to ask about:", opts: ["People", "Quantity or price", "Time"], correct: "Quantity or price" },
+    { q: "Complete the question: '___ time does the class start?'", opts: ["What", "When", "How"], correct: "What" },
+    { q: "Which WH-word is used to ask about things?", opts: ["What", "Who", "Why"], correct: "What" },
+    { q: "Choose the correctly formed question:", opts: ["Why you are sad?", "Are why you sad?", "Why are you sad?"], correct: "Why are you sad?" },
+    { q: "'When' is used to ask about:", opts: ["Time", "Place", "Quantity"], correct: "Time" },
+    { q: "Complete the question: '___ old are you?'", opts: ["What", "How", "Which"], correct: "How" },
+    { q: "Which WH-word is used to ask about a place?", opts: ["When", "Where", "Who"], correct: "Where" },
+    { q: "Choose the correct question:", opts: ["What does this mean?", "What mean this?", "What this means?"], correct: "What does this mean?" },
+    { q: "'Which' is mainly used when:", opts: ["The options are limited", "Asking about time", "Asking for reasons"], correct: "The options are limited" },
+    { q: "Complete the question: '___ do you study English?' (reason)", opts: ["Why", "When", "Which"], correct: "Why" },
+    { q: "Which WH-word is used to ask about manner or way?", opts: ["How", "When", "Who"], correct: "How" },
+    { q: "Identify the incorrect question:", opts: ["Who is calling?", "Where are they?", "What you are doing?"], correct: "What you are doing?" },
+    { q: "Complete the question: '___ book is this?' (possession)", opts: ["Whose", "Where", "What"], correct: "Whose" },
+    { q: "Which WH-word is used to ask about a specific person?", opts: ["Where", "Which", "Who"], correct: "Who" },
+    { q: "Select the correct WH-word: '___ does it cost?'", opts: ["Who", "How much", "When"], correct: "How much" },
+    { q: "Choose the correct structure for WH-questions:", opts: ["WH + do/does + subject + verb", "Subject + WH + verb", "Do + WH + verb + subject"], correct: "WH + do/does + subject + verb" }
+];
 
     /* ------------------ INICIO ------------------ */
     function startGame() {
