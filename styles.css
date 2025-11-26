@@ -1,0 +1,34 @@
+.card-tile {
+    width: 100%;
+    padding-top: 100%; /* cuadrado */
+    position: relative;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: transform 0.2s;
+}
+
+.card-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #0d6efd; /* boca abajo */
+    border-radius: 12px;
+    font-size: 2.5rem;
+    color: white;
+}
+
+.card-tile.flipped .card-inner {
+    background: #ffffff;
+    color: #0d6efd;
+    border: 2px solid #0d6efd;
+}
+
+.card-tile.matched .card-inner {
+    background: #198754;
+    color: white;
+    border: 2px solid #198754;
+    cursor: default;
+}

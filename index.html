@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Memorama Inglés</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f5f5f5;
+        }
+
+        /* --- TARJETA --- */
+        .card-tile {
+            height: 80px !important;    /* tamaño fijo */
+            width: 100%;
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;              /* ⬆ icono más grande */
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all .2s ease;
+            background: #d8e2ff;          /* color boca abajo */
+            border: 3px solid #0d6efd;
+            color: #0d6efd;
+        }
+
+        .card-tile:hover {
+            transform: scale(1.05);
+            background: #bdd1ff;
+        }
+
+        /* Boca arriba */
+        .revealed {
+            background: white !important;
+            color: #0d6efd !important;
+            border-color: #0d6efd !important;
+        }
+
+        /* Match */
+        .matched {
+            background: #198754 !important;
+            border-color: #198754 !important;
+            color: white !important;
+            cursor: default;
+            transform: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container py-4">
+
+    <h2 class="fw-bold text-center mb-4">
+        🧠 English Memory Game
+    </h2>
+
+    <!-- Nombres jugadores -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <input id="player1" class="form-control" placeholder="Player 1 name">
+        </div>
+        <div class="col-md-6">
+            <input id="player2" class="form-control" placeholder="Player 2 name">
+        </div>
+    </div>
+
+    <button class="btn btn-primary mb-4 w-100" onclick="startGame()">
+        Start game
+    </button>
+
+    <!-- Turno -->
+    <h4 id="turno" class="text-center fw-semibold mb-2"></h4>
+
+    <!-- Marcador -->
+    <div class="text-center mb-4">
+        <span id="score1" class="badge bg-primary fs-5 me-2">0</span>
+        <span id="score2" class="badge bg-success fs-5">0</span>
+    </div>
+
+    <!-- Tablero -->
+    <div id="board" class="row g-3"></div>
+</div>
+
+<!-- Modal de preguntas -->
+<div class="modal fade" id="questionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Pregunta de Inglés</h5>
+            </div>
+
+            <div class="modal-body">
+                <p id="questionText" class="fw-semibold"></p>
+                <div id="options" class="list-group"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    let icons = [
+        "bi-alarm", "bi-battery-full", "bi-lightning", "bi-cloud",
+        "bi-eye", "bi-moon", "bi-star", "bi-umbrella"
+    ];
+
+    let cards = [];
+    let revealed = [];
+    let lock = false;
+    let turnoActual = 1;
+    let score1 = 0;
+    let score2 = 0;
+    let currentMatch = null;
+
+    const preguntas = [
+        { q: "What is the capital of Colombia?", opts: ["Bogotá", "Cali", "Medellín"], correct: "Bogotá" },
+        { q: "Which ocean is on Colombia’s west coast?", opts: ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean"], correct: "Pacific Ocean" },
+        { q: "Which famous coffee comes from Colombia?", opts: ["Arabica", "Robusta", "Cappuccino"], correct: "Arabica" },
+        { q: "What is the currency of Colombia?", opts: ["Peso", "Dollar", "Euro"], correct: "Peso" },
+        { q: "Which city is known as the 'City of Eternal Spring'?", opts: ["Medellín", "Barranquilla", "Cartagena"], correct: "Medellín" },
+        { q: "What is Colombia’s most famous carnival?", opts: ["Barranquilla Carnival", "Flower Festival", "White and Black Carnival"], correct: "Barranquilla Carnival" },
+        { q: "What is the national flower of Colombia?", opts: ["Orchid", "Rose", "Sunflower"], correct: "Orchid" },
+        { q: "What is the main language spoken in Colombia?", opts: ["Spanish", "English", "Portuguese"], correct: "Spanish" },
+        { q: "Which drink is traditional in Colombia?", opts: ["Aguardiente", "Tequila", "Vodka"], correct: "Aguardiente" },
+        { q: "What is the Colombian national sport?", opts: ["Tejo", "Soccer", "Cycling"], correct: "Tejo" },
+        { q: "Which Colombian city has a historic walled city?", opts: ["Cartagena", "Pereira", "Manizales"], correct: "Cartagena" },
+        { q: "What is the most popular sport in Colombia?", opts: ["Soccer", "Basketball", "Baseball"], correct: "Soccer" },
+        { q: "Which mountain range crosses Colombia?", opts: ["Andes", "Himalayas", "Alps"], correct: "Andes" },
+        { q: "Which Colombian artist is famous for 'big figures'?", opts: ["Fernando Botero", "Picasso", "Monet"], correct: "Fernando Botero" },
+        { q: "Which fruit is common in Colombia?", opts: ["Mango", "Blueberry", "Kiwi"], correct: "Mango" },
+        { q: "What is Colombia’s Independence Day?", opts: ["July 20", "August 15", "May 5"], correct: "July 20" },
+        { q: "Which Colombian river is one of the largest?", opts: ["Magdalena River", "Nile River", "Danube River"], correct: "Magdalena River" },
+        { q: "Which dish is traditional in Colombia?", opts: ["Bandeja Paisa", "Paella", "Tacos"], correct: "Bandeja Paisa" },
+        { q: "Which animal is famous in the Colombian Amazon?", opts: ["Pink dolphin", "Polar bear", "Kangaroo"], correct: "Pink dolphin" },
+        { q: "Which Colombian city is known for salsa?", opts: ["Cali", "Bogotá", "Santa Marta"], correct: "Cali" },
+        { q: "What color is NOT on the Colombian flag?", opts: ["Green", "Yellow", "Red"], correct: "Green" },
+        { q: "Which Colombian writer won the Nobel Prize?", opts: ["Gabriel García Márquez", "Jorge Luis Borges", "Pablo Neruda"], correct: "Gabriel García Márquez" },
+        { q: "What is a typical Colombian sweet?", opts: ["Arequipe", "Marshmallow", "Baklava"], correct: "Arequipe" },
+        { q: "Which sea borders northern Colombia?", opts: ["Caribbean Sea", "Mediterranean Sea", "Black Sea"], correct: "Caribbean Sea" },
+        { q: "Which Colombian region is known for coffee?", opts: ["Coffee Axis", "Patagonia", "Amazon Basin"], correct: "Coffee Axis" },
+        { q: "What is a common Colombian greeting?", opts: ["Hola", "Bonjour", "Ciao"], correct: "Hola" },
+        { q: "Which famous Colombian music uses accordion?", opts: ["Vallenato", "Reggae", "Opera"], correct: "Vallenato" },
+        { q: "Which emblematic Colombian bird is large and black?", opts: ["Andean condor", "Flamingo", "Penguin"], correct: "Andean condor" },
+        { q: "Which city hosts the Flower Festival?", opts: ["Medellín", "Bogotá", "Cúcuta"], correct: "Medellín" },
+        { q: "What is a common Colombian street food?", opts: ["Arepa", "Pizza", "Sushi"], correct: "Arepa" },
+        { q: "Which Colombian department is known for its beaches?", opts: ["La Guajira", "Boyacá", "Tolima"], correct: "La Guajira" },
+        { q: "Which Colombian region is mostly jungle?", opts: ["Amazonas", "Antioquia", "Cundinamarca"], correct: "Amazonas" }
+    ];
+
+    /* ------------------ INICIO ------------------ */
+    function startGame() {
+        const p1 = document.getElementById("player1").value.trim();
+        const p2 = document.getElementById("player2").value.trim();
+
+        if (!p1 || !p2) {
+            alert("Escribe los dos nombres.");
+            return;
+        }
+
+        turnoActual = 1;
+        document.getElementById("turno").innerText = "Turn: " + p1;
+
+        score1 = 0;
+        score2 = 0;
+        document.getElementById("score1").innerText = 0;
+        document.getElementById("score2").innerText = 0;
+
+        cards = [...icons, ...icons];
+        cards.sort(() => Math.random() - 0.5);
+
+        drawBoard();
+    }
+
+    /* ------------------ TABLERO ------------------ */
+    function drawBoard() {
+        const board = document.getElementById("board");
+        board.innerHTML = "";
+
+        cards.forEach((icon, idx) => {
+            const col = document.createElement("div");
+            col.className = "col-3";   /* 4 columnas */
+
+            const card = document.createElement("div");
+            card.className = "card-tile";
+            card.dataset.index = idx;
+            card.dataset.icon = icon;
+            card.innerHTML = `<i class="bi bi-question-lg"></i>`;
+            card.onclick = () => revealCard(card);
+
+            col.appendChild(card);
+            board.appendChild(col);
+        });
+    }
+
+    /* ------------------ REVELAR CARTAS ------------------ */
+    function revealCard(card) {
+        if (lock) return;
+        if (card.classList.contains("matched")) return;
+        if (card.classList.contains("revealed")) return;
+
+        card.classList.add("revealed");
+        card.innerHTML = `<i class="bi ${card.dataset.icon}"></i>`;
+        revealed.push(card);
+
+        if (revealed.length === 2) {
+            lock = true;
+
+            if (revealed[0].dataset.icon === revealed[1].dataset.icon) {
+                currentMatch = revealed[0].dataset.icon;
+
+                askQuestion(); // SOLO da puntos si responde bien
+            } else {
+                setTimeout(() => {
+                    revealed.forEach(c => {
+                        c.classList.remove("revealed");
+                        c.innerHTML = `<i class="bi bi-question-lg"></i>`;
+                    });
+                    revealed = [];
+                    lock = false;
+                    cambiarTurno();
+                }, 800);
+            }
+        }
+    }
+
+    /* ------------------ PREGUNTA ------------------ */
+    function askQuestion() {
+        const p = preguntas[Math.floor(Math.random() * preguntas.length)];
+
+        document.getElementById("questionText").innerText = p.q;
+
+        const optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = "";
+
+        p.opts.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "list-group-item list-group-item-action";
+            btn.innerText = opt;
+
+            btn.onclick = () => {
+
+                if (opt === p.correct) {
+                    // ✔ Respuesta correcta → ahora sí se agrega punto
+                    revealed.forEach(c => c.classList.add("matched"));
+
+                    if (turnoActual === 1) {
+                        score1++;
+                        document.getElementById("score1").innerText = score1;
+                    } else {
+                        score2++;
+                        document.getElementById("score2").innerText = score2;
+                    }
+
+                    revealed = [];
+                    lock = false;
+
+                } else {
+                    // ❌ Incorrecta → NO suma punto, NO se queda la pareja
+                    revealed.forEach(c => {
+                        c.classList.remove("revealed");
+                        c.innerHTML = `<i class="bi bi-question-lg"></i>`;
+                    });
+
+                    revealed = [];
+                    lock = false;
+                    cambiarTurno();
+                }
+
+                modal.hide();
+            };
+
+            optionsDiv.appendChild(btn);
+        });
+
+        modal.show();
+    }
+
+    /* ------------------ CAMBIO DE TURNO ------------------ */
+    function cambiarTurno() {
+        turnoActual = turnoActual === 1 ? 2 : 1;
+
+        const p1 = document.getElementById("player1").value;
+        const p2 = document.getElementById("player2").value;
+
+        document.getElementById("turno").innerText =
+            turnoActual === 1 ? "Turno de " + p1 : "Turno de " + p2;
+    }
+
+    const modal = new bootstrap.Modal(document.getElementById('questionModal'));
+</script>
+
+</body>
+</html>
